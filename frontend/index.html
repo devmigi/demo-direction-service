@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Polylines</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style>
+        #map {
+        height: 100%;
+        }
+
+        html,
+        body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=&v=weekly"
+      async ></script>
+
+    <script>   
+    function initMap() {
+        fetch('http://localhost:8001/api/v1/direction?origin=12.9257673,77.634549&destination=12.9159047,77.6252829')
+        .then(response => response.json())
+        .then(data => {
+            setMarkers(data);
+        });
+    }
+
+
+    function setMarkers(data) {
+        steps = data.steps;
+        console.log(steps);
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { 
+                lat: (data.origin.lat + data.destination.lat)/2, 
+                lng: (data.origin.lng + data.destination.lng)/2 
+            },            
+            mapTypeId: "terrain",
+        });
+
+        for (let i = 0; i < steps.length; i++) {
+            const step = steps[i];
+            new google.maps.Marker({
+            position: { lat: step.lat, lng: step.lng },
+            map,
+            });
+        }
+    }
+    </script>
+  </body>
+</html>
